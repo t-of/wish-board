@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2f8f6f">
+  <meta name="description" content="付箋をドラッグして置く、ホワイトボード型のタスク整理">
+  <title>wish-board — やりたい×やらなきゃのボード</title>
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="wish-board">
+  <meta property="og:title" content="wish-board — やりたい×やらなきゃのボード">
+  <meta property="og:description" content="付箋をドラッグして置く、ホワイトボード型のタスク整理">
+  <meta property="og:url" content="https://t-of.github.io/wish-board/">
+  <meta property="og:image" content="https://t-of.github.io/wish-board/icons/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- apple-mobile-web-app-status-bar-style は付けない（black-translucent だと iOS 26 で上部が隠れる） -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="wish-board">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="./webapp-kit/webapp-kit.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="bar">
+      <h1 class="bar__title">wish-board</h1>
+      <div class="bar__actions">
+        <button class="pill" data-wak="install" hidden>アプリにする</button>
+        <button class="pill" id="addNote">＋ 付箋</button>
+      </div>
+    </header>
+
+    <section class="stage" id="stage">
+      <div class="board" id="board">
+        <span class="axis-label axis-label--right">やらなきゃ →</span>
+        <span class="axis-label axis-label--top">やりたい ↑</span>
+        <!-- 付箋はここに JS で追加 -->
+      </div>
+    </section>
+
+    <footer class="credit">
+      <a href="/">T.OF...</a> のアプリ ・ <a href="https://t-of.github.io/contact/">問い合わせ</a>
+    </footer>
+  </main>
+
+  <dialog id="noteSheet" class="sheet">
+    <form method="dialog" class="sheet__form">
+      <label class="field">
+        <span>タイトル</span>
+        <input type="text" id="f-title" maxlength="40" placeholder="やること">
+      </label>
+      <label class="field">
+        <span>期限</span>
+        <input type="date" id="f-due">
+      </label>
+      <label class="field">
+        <span>メモ</span>
+        <textarea id="f-memo" maxlength="200" rows="3"></textarea>
+      </label>
+      <div class="field">
+        <span>色</span>
+        <div class="colors" id="f-colors"></div>
+      </div>
+      <label class="field field--row">
+        <input type="checkbox" id="f-done">
+        <span>完了</span>
+      </label>
+      <div class="sheet__actions">
+        <button type="button" id="f-delete" class="pill pill--danger">削除</button>
+        <button type="submit" id="f-save" class="pill pill--primary">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="./webapp-kit/webapp-kit.js"></script>
+  <script src="./main.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+:root {
+  --bg: #2f8f6f;
+  --fg: #eceef3;
+  --muted: #9aa0ab;
+  --accent: #ffd35c;
+}
+
+* { box-sizing: border-box; }
+
+/* Safari 26 の上下バーの色は html の背景から取られる。body と同じ色にしておく */
+html { background-color: var(--bg); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+
+/* 画面の端に置くものはセーフエリアの分だけ内側に。高さは 100vh ではなく 100dvh */
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+}
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar__title { margin: 0; font-size: 18px; }
+.bar__actions { display: flex; gap: 8px; }
+.pill {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.stage {
+  flex: 1;
+  min-height: 0; /* flex 子を縮められるように */
+  display: flex;
+  touch-action: none;   /* 付箋のドラッグをブラウザのスクロール・拡大に取られない */
+  user-select: none;
+  -webkit-user-select: none;
+}
+.credit { text-align: center; font-size: 12px; color: var(--muted); padding-top: 6px; }
+.credit a { color: inherit; }
+
+/* ---- ボード ---- */
+.board {
+  position: relative;
+  flex: 1;
+  margin: 8px 4px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 50%, transparent 50%) no-repeat,
+    linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.08) 50%) no-repeat,
+    rgba(255, 255, 255, 0.03);
+  background-size: 100% 100%;
+  overflow: hidden;
+}
+.board::before, .board::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.25);
+}
+.board::before { left: 0; right: 0; top: 50%; height: 1px; } /* 横の十字線 */
+.board::after { top: 0; bottom: 0; left: 50%; width: 1px; } /* 縦の十字線 */
+.axis-label {
+  position: absolute;
+  font-size: 11px;
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 1;
+}
+.axis-label--right { right: 6px; top: calc(50% + 4px); }
+.axis-label--top { top: 4px; left: 50%; transform: translateX(-50%); }
+
+.note {
+  position: absolute;
+  width: 84px;
+  min-height: 56px;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  padding: 6px 7px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: #2a2a2a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: grab;
+  touch-action: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+.note.dragging { cursor: grabbing; z-index: 10; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35); }
+.note__title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.note__due { font-size: 10px; opacity: 0.75; }
+.note__due.overdue { color: #b3261e; font-weight: 600; }
+.note.done { opacity: 0.55; }
+.note.done .note__title { text-decoration: line-through; }
+
+/* 付箋の色（薄い付箋紙らしい色） */
+.note--yellow { background: #ffe382; }
+.note--pink   { background: #ffc2d1; }
+.note--blue   { background: #bfe3ff; }
+.note--green  { background: #c3f0c8; }
+.note--orange { background: #ffd1a6; }
+
+/* ---- 編集シート（下から出るダイアログ） ---- */
+.sheet {
+  border: none;
+  border-radius: 14px 14px 0 0;
+  padding: 16px;
+  width: 100%;
+  max-width: 420px;
+  margin: auto auto 0;
+  background: #20242b;
+  color: var(--fg);
+}
+.sheet::backdrop { background: rgba(0, 0, 0, 0.5); }
+.sheet__form { display: flex; flex-direction: column; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.field--row { flex-direction: row; align-items: center; gap: 8px; }
+.field input[type="text"], .field input[type="date"], .field textarea {
+  font: inherit;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--fg);
+  resize: vertical;
+}
+.colors { display: flex; gap: 8px; }
+.colors input { display: none; }
+.colors span {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.colors input:checked + span { border-color: var(--fg); }
+.sheet__actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.pill--primary { background: var(--accent); color: #2a2a2a; border-color: transparent; font-weight: 600; }
+.pill--danger { background: rgba(255, 90, 90, 0.18); border-color: rgba(255, 90, 90, 0.4); color: #ffb0b0; }
+
+/* 全画面のオーバーレイは opacity ではなく display: none で隠す */
